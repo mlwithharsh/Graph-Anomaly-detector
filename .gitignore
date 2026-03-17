@@ -1,0 +1,18 @@
+# environments
+myenv/
+ai_env/
+venv/
+
+# python cache
+__pycache__/
+*.pyc
+
+# jupyter checkpoints
+.ipynb_checkpoints/
+
+# data (optional if large)
+*.hdf5
+
+# system files
+.DS_Store
+Thumbs.db
