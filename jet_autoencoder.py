@@ -38,8 +38,6 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import OneCycleLR
 
 class ResBlock(nn.Module):
-    """Pre-activation residual block with GroupNorm + Dropout2d."""
-
     def __init__(self, channels: int, dropout: float = 0.1):
         super().__init__()
         self.block = nn.Sequential(
@@ -57,8 +55,6 @@ class ResBlock(nn.Module):
 
 
 class DownBlock(nn.Module):
-    """Stride-2 conv  →  GroupNorm  →  LeakyReLU  →  ResBlock."""
-
     def __init__(self, in_ch: int, out_ch: int, dropout: float = 0.1):
         super().__init__()
         self.conv = nn.Sequential(
@@ -73,8 +69,6 @@ class DownBlock(nn.Module):
 
 
 class UpBlock(nn.Module):
-    """ConvTranspose2d (stride-2)  →  GroupNorm  →  LeakyReLU  →  ResBlock."""
-
     def __init__(self, in_ch: int, out_ch: int, dropout: float = 0.05):
         super().__init__()
         self.up = nn.Sequential(
@@ -88,18 +82,6 @@ class UpBlock(nn.Module):
         return self.res(self.up(x))
 
 class JetAutoencoder(nn.Module):
-    """
-    Input:  (B, 3, 120, 120)   [images cropped to 120×120 in the notebook]
-    Latent: (B, 256, 7, 7)     flat dim ≈ 12 544   (26× smaller than original)
-    Output: (B, 3, 120, 120)   resized to match input exactly
-
-    Spatial flow (H×W)
-    ------------------
-      120 → 60 → 30 → 15 → 7   (encoder, 4× stride-2 steps)
-        7 → 14 → 28 → 56 → 112 (decoder, 4× stride-2 steps)
-      112 → 120               (bilinear resize in forward() — only last 8px)
-    """
-
     def __init__(self, latent_channels: int = 256, dropout: float = 0.1):
         super().__init__()
 
@@ -118,7 +100,6 @@ class JetAutoencoder(nn.Module):
         self.dec2 = UpBlock(64,  32,  dropout)              # (B,  32, 56, 56)
         self.dec1 = UpBlock(32,  16,  dropout)              # (B,  16,112,112)
 
-        # Final 1×1-like projection — NO activation (outputs are in ℝ)
         self.head = nn.Conv2d(16, 3, 3, padding=1)
 
     def encode(self, x):
@@ -145,7 +126,6 @@ class JetAutoencoder(nn.Module):
 
     @torch.no_grad()
     def anomaly_score(self, x):
-        """Per-sample MSE reconstruction error — use as anomaly metric."""
         self.eval()
         x_hat = self(x)
         return ((x - x_hat) ** 2).mean(dim=[1, 2, 3])
@@ -183,13 +163,6 @@ def make_optimizer(model, train_loader, epochs: int = 100,
 def train(model, train_loader, optimizer, scheduler,
           epochs: int = 100, device: str = "cpu",
           grad_clip: float = 1.0, print_every: int = 1):
-    """
-    Standard MSE training loop with gradient clipping.
-
-    Returns
-    -------
-    loss_history : list[float]   mean MSE per epoch
-    """
     model.to(device)
     loss_history = []
 
@@ -228,10 +201,6 @@ def train(model, train_loader, optimizer, scheduler,
 
 def visualise_reconstructions(model, val_loader, device: str = "cpu",
                               n: int = 4):
-    """
-    Plot n original / reconstructed jet images side-by-side (ECAL channel).
-    Call after training to sanity-check reconstruction quality.
-    """
     import matplotlib.pyplot as plt
 
     model.eval()
