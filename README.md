@@ -13,6 +13,7 @@ The project progresses through three stages:
 The goal is to build robust, high-quality representations of jet data and evaluate their effectiveness in classification tasks.
 
 ---
+<img width="1184" height="389" alt="image" src="https://github.com/user-attachments/assets/c2b05639-7e28-4cb7-b08b-bde74c36bf8a" />
 
 ## Key Contributions
 
