@@ -1,4 +1,4 @@
-# ML4SCI GSoC 2026 — Jet Classification using Deep Learning & Graph Neural Networks
+# ML4SCI GSoC 2026 — Jet Classification using Deep Learning & Graph Neural Networks.
 
 ## Overview
 
